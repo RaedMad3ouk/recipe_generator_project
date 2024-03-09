@@ -2,16 +2,16 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Replace with a secure secret key
+app.secret_key = 'raedmad3ouk'
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Mock user database for demonstration purposes
+# Mock user database
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
 
-# Replace this with a real user database in a production scenario
+# Replace this with a real user database 
 users = {'1': User('1'), '2': User('2')}
 
 @login_manager.user_loader
