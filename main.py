@@ -75,7 +75,3 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
-class Note (db.Model):
-    id = db.Colum(db.integer, primary_key=True)
-    date = db.Colum(db.string(10000))
-    
