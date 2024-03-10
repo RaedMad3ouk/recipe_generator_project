@@ -7,20 +7,26 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Mock user database
+
+
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
 
-# Replace this with a real user database 
+
+# Replace this with a real user database
 users = {'1': User('1'), '2': User('2')}
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return users.get(user_id)
 
+
 @app.route('/')
 def home():
     return render_template('home.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -32,10 +38,12 @@ def login():
             return redirect(url_for('dashboard'))
     return render_template('create_account.html')  # Render the combined page
 
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
     return f'Hello, {current_user.id}! This is your dashboard.'
+
 
 @app.route('/logout')
 @login_required
@@ -43,8 +51,10 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 @app.route('/create_account')
 def create_account():
@@ -63,3 +73,9 @@ def generated_recipe():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+class Note (db.Model):
+    id = db.Colum(db.integer, primary_key=True)
+    date = db.Colum(db.string(10000))
+    
