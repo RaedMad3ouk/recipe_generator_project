@@ -1,49 +1,50 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask import flash, redirect, url_for, request
 
 app = Flask(__name__)
 app.secret_key = 'raedmad3ouk'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Mock user database
 
-
-class User(UserMixin):
-    def __init__(self, user_id):
-        self.id = user_id
-
-
-# Replace this with a real user database
-users = {'1': User('1'), '2': User('2')}
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return users.get(user_id)
+    return User.query.get(int(user_id))
 
 
 @app.route('/')
 def home():
     return render_template('home.html')
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user_id = request.form['user_id']
-        user = users.get(user_id)
-        if user:
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('dashboard'))
-    return render_template('create_account.html')  # Render the combined page
-
+        else:
+            flash('Login failed. Please check your email and password.')
+    return render_template('login.html')
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return f'Hello, {current_user.id}! This is your dashboard.'
-
+    return f'Hello, {current_user.username}! This is your dashboard.'
 
 @app.route('/logout')
 @login_required
@@ -51,27 +52,7 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
-
-
-@app.route('/create_account')
-def create_account():
-    return render_template('create_account.html')
-
-
-@app.route('/preferences')
-def preferences():
-    return render_template('preferences.html')
-
-
-@app.route('/generated_recipe')
-def generated_recipe():
-    return render_template('generated_recipe.html')
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
