@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" 
-  href="{{ url_for('static', filename='css/recipe.css') }}"
-  <title>Generated Recipe</title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recipe App</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/recipe.css') }}"
+    />
+  </head>
   <body>
     <header>
-      <h1>Generated Recipe</h1>
-      <p>Your personalized recipe based on preferences.</p>
+      <h1>Step into the World of Flavor</h1>
+      <p>Welcome to our recipe app!</p>
     </header>
 
-    <section class="recipe-container">
-      <!-- Display the generated recipe content here -->
-      <div class="recipe-card">
-        <h2>Recipe Title</h2>
-        <p>Description and instructions...</p>
-      </div>
-    </section>
+    <form method="POST" action="/generate_recipe/generate_recipe">
+      <input type="text" name="search_query" placeholder="Search for recipes" />
+      <input type="submit" value="Search" class="login-button" />
+    </form>
 
-    <footer>
-      <a href="/logout" class="logout-link">Logout</a>
-    </footer>
+    <div class="recipe-details">
+      {% if recipes %}
+      <h2>Search Results for "{{ search_query }}"</h2>
+      <ul>
+        {% for recipe in recipes %}
+        <li>
+          <h3>{{ recipe.title }}</h3>
+          {% if recipe.image %}
+          <img src="{{ recipe.image }}" alt="{{ recipe.title }}" />
+          {% endif %}
+          <a
+          <a href="{{ url_for('generate.view_recipe', recipe_id=recipe.id, search_query=request.args.get('search_query')) }}">View Recipe</a></a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>No recipes found for "{{ search_query }}"</p>
+      {% endif %}
+    </div>
   </body>
 </html>

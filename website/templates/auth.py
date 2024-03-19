@@ -19,7 +19,7 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('preference.preference'))
+                return redirect(url_for('generate.generate_recipe'))
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -60,7 +60,9 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
-            return redirect(url_for('preference.preference'))
+
+            # Redirect the user to the generate_recipe route after account creation
+            return redirect(url_for('generate.generate_recipe'))
 
     # If the request method is GET or if there were validation errors, render the signup page
     return render_template("create_account.html", user=current_user)
